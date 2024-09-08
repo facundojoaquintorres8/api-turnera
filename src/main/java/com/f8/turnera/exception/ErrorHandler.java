@@ -92,6 +92,7 @@ public class ErrorHandler {
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+        // TODO: revisar porque esto también salta si quiero guardar algo no nulo, por ej la pwd en crear usuario
         @ExceptionHandler(DataIntegrityViolationException.class)
         public ResponseEntity<ResponseDTO> dataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
                 StringWriter errors = new StringWriter();

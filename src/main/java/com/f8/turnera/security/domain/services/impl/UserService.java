@@ -165,6 +165,8 @@ public class UserService implements IUserService {
         user.setOrganization(MapperHelper.modelMapper().map(organization, Organization.class));
         user.setActivationKey(RandomString.make(20));
         user.setProfiles(addPermissions(userDTO));
+        user.setPassword("");
+        user.setAdmin(false);
 
         emailService.sendAccountActivationEmail(user);
 

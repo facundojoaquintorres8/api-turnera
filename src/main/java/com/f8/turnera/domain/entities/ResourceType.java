@@ -1,9 +1,7 @@
 package com.f8.turnera.domain.entities;
 
 import java.time.LocalDateTime;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -11,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
@@ -47,8 +44,5 @@ public class ResourceType {
     @Column(name = "description")
     @NotBlank
     private String description;
-
-    @OneToMany(cascade = CascadeType.REFRESH, mappedBy = "resourceType")
-    private Set<Resource> resources;
 
 }
