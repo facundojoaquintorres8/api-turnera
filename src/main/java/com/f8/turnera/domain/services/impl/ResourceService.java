@@ -3,8 +3,10 @@ package com.f8.turnera.domain.services.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -16,6 +18,7 @@ import javax.persistence.criteria.Root;
 import com.f8.turnera.domain.dtos.OrganizationDTO;
 import com.f8.turnera.domain.dtos.ResourceDTO;
 import com.f8.turnera.domain.dtos.ResourceFilterDTO;
+import com.f8.turnera.domain.dtos.ResourceTypeDTO;
 import com.f8.turnera.domain.dtos.ResponseDTO;
 import com.f8.turnera.domain.entities.Organization;
 import com.f8.turnera.domain.entities.Resource;
@@ -74,13 +77,8 @@ public class ResourceService implements IResourceService {
             Predicate predicate = cb.like(cb.lower(root.get("code")), "%" + filter.getCode().toLowerCase() + "%");
             predicates.add(predicate);
         }
-        if (filter.getResourceTypeDescription() != null) {
-            Predicate predicate = cb.like(cb.lower(root.join("resourceType", JoinType.LEFT).get("description")),
-                    "%" + filter.getResourceTypeDescription().toLowerCase() + "%");
-            predicates.add(predicate);
-        }
         if (filter.getResourceTypeId() != null) {
-            Predicate predicate = cb.equal(root.join("resourceType", JoinType.LEFT), filter.getResourceTypeId());
+            Predicate predicate = cb.equal(root.join("resourcesTypes", JoinType.LEFT), filter.getResourceTypeId());
             predicates.add(predicate);
         }
         if (filter.getActive() != null) {
@@ -101,10 +99,6 @@ public class ResourceService implements IResourceService {
                     result.sort(Comparator.comparing(Resource::getCode,
                             Comparator.nullsFirst(String::compareToIgnoreCase)));
                     break;
-                case "resourceTypeDescription":
-                    result.sort(Comparator.comparing(x -> x.getResourceType().getDescription(),
-                            String::compareToIgnoreCase));
-                    break;
                 default:
                     break;
                 }
@@ -117,10 +111,6 @@ public class ResourceService implements IResourceService {
                     result.sort(
                             Comparator.comparing(Resource::getCode, Comparator.nullsFirst(String::compareToIgnoreCase))
                                     .reversed());
-                    break;
-                case "resourceTypeDescription":
-                    result.sort(Comparator.comparing(x -> x.getResourceType().getDescription(),
-                            Comparator.nullsFirst(String::compareToIgnoreCase).reversed()));
                     break;
                 default:
                     break;
@@ -145,14 +135,14 @@ public class ResourceService implements IResourceService {
     }
 
     @Override
-    public ResponseDTO create(String token, ResourceDTO resourceDTO) throws Exception {
+    public ResponseDTO create(String token, ResourceDTO request) throws Exception {
         OrganizationDTO organization = (OrganizationDTO) organizationService.findById(token).getData();
 
-        Resource resource = MapperHelper.modelMapper().map(resourceDTO, Resource.class);
+        Resource resource = MapperHelper.modelMapper().map(request, Resource.class);
         resource.setCreatedDate(LocalDateTime.now());
         resource.setActive(true);
         resource.setOrganization(MapperHelper.modelMapper().map(organization, Organization.class));
-        resource.setResourceType(MapperHelper.modelMapper().map(resourceDTO.getResourceType(), ResourceType.class));
+        resource.setResourcesTypes(addResourcesTypes(request));
 
         resourceRepository.save(resource);
 
@@ -160,17 +150,17 @@ public class ResourceService implements IResourceService {
     }
 
     @Override
-    public ResponseDTO update(String token, ResourceDTO resourceDTO) throws Exception {
-        Optional<Resource> resource = resourceRepository.findByIdAndOrganizationId(resourceDTO.getId(), OrganizationHelper.getOrganizationId(token));
+    public ResponseDTO update(String token, ResourceDTO request) throws Exception {
+        Optional<Resource> resource = resourceRepository.findByIdAndOrganizationId(request.getId(), OrganizationHelper.getOrganizationId(token));
         if (!resource.isPresent()) {
-            throw new NoContentException("Recurso no encontrado - " + resourceDTO.getId());
+            throw new NoContentException("Recurso no encontrado - " + request.getId());
         }
 
         resource.ifPresent(r -> {
-            r.setActive(resourceDTO.getActive());
-            r.setDescription(resourceDTO.getDescription());
-            r.setCode(resourceDTO.getCode());
-            r.setResourceType(MapperHelper.modelMapper().map(resourceDTO.getResourceType(), ResourceType.class));
+            r.setActive(request.getActive());
+            r.setDescription(request.getDescription());
+            r.setCode(request.getCode());
+            r.setResourcesTypes(addResourcesTypes(request));
 
             resourceRepository.save(r);
         });
@@ -188,5 +178,13 @@ public class ResourceService implements IResourceService {
         resourceRepository.delete(resource.get());
 
         return new ResponseDTO(HttpStatus.OK.value(), "Borrado exitoso!");
+    }
+
+    private Set<ResourceType> addResourcesTypes(ResourceDTO resource) {
+        Set<ResourceType> newResourcesTypes = new HashSet<>();
+        for (ResourceTypeDTO resourceType : resource.getResourcesTypes()) {
+            newResourcesTypes.add(MapperHelper.modelMapper().map(resourceType, ResourceType.class));
+        }
+        return newResourcesTypes;
     }
 }

@@ -1,13 +1,17 @@
 package com.f8.turnera.domain.entities;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -48,9 +52,8 @@ public class Resource {
     @Column(name = "code")
     private String code;
 
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "resource_type_id")
-    @NotNull
-    private ResourceType resourceType;
+    @ManyToMany(cascade = CascadeType.REFRESH)
+    @JoinTable(name = "resources_resources_types", joinColumns = @JoinColumn(name = "resource_id"), inverseJoinColumns = @JoinColumn(name = "resource_type_id"))
+    private Set<ResourceType> resourcesTypes;
 
 }

@@ -1,5 +1,7 @@
 package com.f8.turnera.domain.dtos;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -9,6 +11,6 @@ public class ResourceDTO {
     private Boolean active;
     private String description;
     private String code;
-    private ResourceTypeDTO resourceType;
+    private List<ResourceTypeDTO> resourcesTypes;
 
 }

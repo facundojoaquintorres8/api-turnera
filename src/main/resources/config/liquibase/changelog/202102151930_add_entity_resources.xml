@@ -23,10 +23,17 @@
             </column>
             <column name="code" type="varchar(100)">
                 <constraints nullable="true" />
-            </column>
+            </column>                      
+		</createTable>
+
+        <!-- add relationship table: resources / resources_types -->
+        <createTable tableName="resources_resources_types">
+			<column name="resource_id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+			</column>
             <column name="resource_type_id" type="bigint">
-                <constraints nullable="false" />
-            </column>                        
+                <constraints primaryKey="true" nullable="false"/>
+			</column>
 		</createTable>
 
         <!-- add FKs -->
@@ -37,9 +44,15 @@
             referencedColumnNames="id"
             referencedTableName="organizations"/>
         <addForeignKeyConstraint
+            baseColumnNames="resource_id"
+            baseTableName="resources_resources_types"
+            constraintName="fk_resources"
+            referencedColumnNames="id"
+            referencedTableName="resources"/>
+        <addForeignKeyConstraint
             baseColumnNames="resource_type_id"
-            baseTableName="resources"
-            constraintName="fk_resources_resources_types"
+            baseTableName="resources_resources_types"
+            constraintName="fk_resources_types"
             referencedColumnNames="id"
             referencedTableName="resources_types"/>
             

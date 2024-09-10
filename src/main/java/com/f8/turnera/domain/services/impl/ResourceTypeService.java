@@ -135,11 +135,12 @@ public class ResourceTypeService implements IResourceTypeService {
             throw new NoContentException("Tipo de Recurso no encontrado - " + resourceTypeDTO.getId());
         }
 
-        if (resourceType.get().getActive() && !resourceTypeDTO.getActive()
-                && resourceType.get().getResources().stream().filter(x -> x.getActive()).count() > 0) {
-            throw new RuntimeException(
-                    "Existen Recursos activos con este Tipo de Recurso asociado. Primero debe modificar los Recursos para continuar.");
-        }
+        // TODO: revisar si es necesario, o quizás mostrar mensaje que se desactivarán los recursos o no hacer nada con los recursos
+        // if (resourceType.get().getActive() && !resourceTypeDTO.getActive()
+        //         && resourceType.get().getResources().stream().filter(x -> x.getActive()).count() > 0) {
+        //     throw new RuntimeException(
+        //             "Existen Recursos activos con este Tipo de Recurso asociado. Primero debe modificar los Recursos para continuar.");
+        // }
 
         resourceType.ifPresent(rt -> {
             rt.setActive(resourceTypeDTO.getActive());
