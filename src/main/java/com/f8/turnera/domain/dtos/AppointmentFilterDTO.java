@@ -13,9 +13,7 @@ public class AppointmentFilterDTO extends DefaultFilterDTO {
 
     private Long resourceTypeId;
     private Long resourceId;
-    private String resourceDescription;
     private Long customerId;
-    private String customerBusinessName;
     private AppointmentStatusEnum status;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate from;

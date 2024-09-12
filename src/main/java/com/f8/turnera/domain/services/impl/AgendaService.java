@@ -37,11 +37,13 @@ import com.f8.turnera.domain.entities.Agenda;
 import com.f8.turnera.domain.entities.Appointment;
 import com.f8.turnera.domain.entities.Organization;
 import com.f8.turnera.domain.entities.Resource;
+import com.f8.turnera.domain.entities.ResourceType;
 import com.f8.turnera.domain.repositories.IAgendaRepository;
 import com.f8.turnera.domain.services.IAgendaService;
 import com.f8.turnera.domain.services.IHolidayService;
 import com.f8.turnera.domain.services.IOrganizationService;
 import com.f8.turnera.domain.services.IResourceService;
+import com.f8.turnera.domain.services.IResourceTypeService;
 import com.f8.turnera.exception.BadRequestException;
 import com.f8.turnera.exception.NoContentCustomException;
 import com.f8.turnera.exception.NoContentException;
@@ -63,6 +65,9 @@ public class AgendaService implements IAgendaService {
 
     @Autowired
     private IResourceService resourceService;
+
+    @Autowired
+    private IResourceTypeService resourceTypeService;
 
     @Autowired
     private EntityManager em;
@@ -88,25 +93,13 @@ public class AgendaService implements IAgendaService {
             Predicate predicate = cb.equal(root.join("resource", JoinType.LEFT), filter.getResourceId());
             predicates.add(predicate);
         }
-        if (filter.getResourceDescription() != null) {
-            Predicate predicate = cb.like(cb.lower(root.join("resource", JoinType.LEFT).get("description")),
-                    "%" + filter.getResourceDescription().toLowerCase() + "%");
-            predicates.add(predicate);
-        }
         if (filter.getResourceTypeId() != null) {
-            Predicate predicate = cb.equal(root.join("resource", JoinType.LEFT).get("resourceType"),
-                    filter.getResourceTypeId());
+            Predicate predicate = cb.equal(root.join("resourceType", JoinType.LEFT), filter.getResourceTypeId());
             predicates.add(predicate);
         }
         if (filter.getCustomerId() != null) {
             Predicate predicate = cb.equal(root.join("lastAppointment", JoinType.LEFT).get("customer"),
                     filter.getCustomerId());
-            predicates.add(predicate);
-        }
-        if (filter.getCustomerBusinessName() != null) {
-            Predicate predicate = cb.like(
-                    cb.lower(root.join("lastAppointment", JoinType.LEFT).get("customer").get("businessName")),
-                    "%" + filter.getCustomerBusinessName().toLowerCase() + "%");
             predicates.add(predicate);
         }
         if (filter.getStatus() != null) {
@@ -202,6 +195,8 @@ public class AgendaService implements IAgendaService {
                 Organization.class);
         Resource resource = MapperHelper.modelMapper()
                 .map(resourceService.findById(token, agendaSaveDTO.getResource().getId()).getData(), Resource.class);
+        ResourceType resourceType = MapperHelper.modelMapper()
+                .map(resourceTypeService.findById(token, agendaSaveDTO.getResourceType().getId()).getData(), ResourceType.class);
 
         Boolean isSegmented = BooleanUtils.isTrue(agendaSaveDTO.getSegmented());
 
@@ -245,7 +240,7 @@ public class AgendaService implements IAgendaService {
                     if (isSegmented) {
                         Long daysCount = 0L;
                         while (!tempStart.isAfter(finalize) && !tempStart.isEqual(finalize)) {
-                            agendas.addAll(createAgendasSegmented(resource, organization, createdDate,
+                            agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate,
                                     tempStart, tempEnd, agendaSaveDTO.getDuration()));
                             daysCount++;
                             tempStart = ZonedDateTime
@@ -257,7 +252,7 @@ public class AgendaService implements IAgendaService {
                         }
                     } else {
                         while (!tempStart.isAfter(finalize) && !tempStart.isEqual(finalize)) {
-                            agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                            agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                             tempStart = tempStart.plusDays(1);
                             tempEnd = tempEnd.plusDays(1);
                         }
@@ -265,17 +260,17 @@ public class AgendaService implements IAgendaService {
                     break;
                 case WEEKLY:
                     if (isSegmented) {
-                        agendas.addAll(createAgendasSegmentedWeekly(agendaSaveDTO, resource, organization, createdDate,
+                        agendas.addAll(createAgendasSegmentedWeekly(agendaSaveDTO, resource, resourceType, organization, createdDate,
                                 tempStart, tempEnd, finalize, zoneId, plusDays));
                     } else {
-                        agendas.addAll(createAgendasWeekly(agendaSaveDTO, resource, organization, createdDate, tempStart, tempEnd, finalize));
+                        agendas.addAll(createAgendasWeekly(agendaSaveDTO, resource, resourceType, organization, createdDate, tempStart, tempEnd, finalize));
                     }
                     break;
                 case MONTHLY:
                     Long monthsCount = 0L;
                     if (isSegmented) {
                         while (!tempStart.isAfter(finalize) && !tempStart.isEqual(finalize)) {
-                            agendas.addAll(createAgendasSegmented(resource, organization, createdDate,
+                            agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate,
                                     tempStart, tempEnd, agendaSaveDTO.getDuration()));
                             monthsCount++;
                             tempStart = ZonedDateTime
@@ -287,7 +282,7 @@ public class AgendaService implements IAgendaService {
                         }
                     } else {
                         while (!tempStart.isAfter(finalize) && !tempStart.isEqual(finalize)) {
-                            agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                            agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                             monthsCount++;
                             tempStart = ZonedDateTime
                                     .of(agendaSaveDTO.getStartDate(), agendaSaveDTO.getStartHour(), zoneId)
@@ -304,10 +299,10 @@ public class AgendaService implements IAgendaService {
             }
         } else {
             if (isSegmented) {
-                agendas = createAgendasSegmented(resource, organization, createdDate,
+                agendas = createAgendasSegmented(resource, resourceType, organization, createdDate,
                         tempStart, tempEnd, agendaSaveDTO.getDuration());
             } else {
-                agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
             }
         }
 
@@ -328,44 +323,44 @@ public class AgendaService implements IAgendaService {
     }
 
     private List<Agenda> createAgendasWeekly(AgendaSaveDTO agendaSaveDTO,
-            Resource resource, Organization organization, LocalDateTime createdDate,
+            Resource resource, ResourceType resourceType, Organization organization, LocalDateTime createdDate,
             ZonedDateTime tempStart, ZonedDateTime tempEnd, ZonedDateTime finalize) {
         List<Agenda> agendas = new ArrayList<>();
         while (!tempStart.isAfter(finalize) && !tempStart.isEqual(finalize)) {
             switch (tempStart.getDayOfWeek()) {
                 case SUNDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getSunday())) {
-                        agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                        agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                     }
                     break;
                 case MONDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getMonday())) {
-                        agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                        agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                     }
                     break;
                 case TUESDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getTuesday())) {
-                        agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                        agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                     }
                     break;
                 case WEDNESDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getWednesday())) {
-                        agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                        agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                     }
                     break;
                 case THURSDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getThursday())) {
-                        agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                        agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                     }
                     break;
                 case FRIDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getFriday())) {
-                        agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                        agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                     }
                     break;
                 case SATURDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getSaturday())) {
-                        agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempEnd));
+                        agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempEnd));
                     }
                     break;
             }
@@ -376,7 +371,7 @@ public class AgendaService implements IAgendaService {
     }
 
     private List<Agenda> createAgendasSegmentedWeekly(AgendaSaveDTO agendaSaveDTO,
-            Resource resource, Organization organization, LocalDateTime createdDate,
+            Resource resource, ResourceType resourceType, Organization organization, LocalDateTime createdDate,
             ZonedDateTime tempStart, ZonedDateTime tempEnd, ZonedDateTime finalize,
             ZoneId zoneId, Integer plusDays) {
         List<Agenda> agendas = new ArrayList<>();
@@ -385,43 +380,43 @@ public class AgendaService implements IAgendaService {
             switch (tempStart.getDayOfWeek()) {
                 case SUNDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getSunday())) {
-                        agendas.addAll(createAgendasSegmented(resource, organization, createdDate,
+                        agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate,
                                 tempStart, tempEnd, agendaSaveDTO.getDuration()));
                     }
                     break;
                 case MONDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getMonday())) {
-                        agendas.addAll(createAgendasSegmented(resource, organization, createdDate, tempStart,
+                        agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate, tempStart,
                         tempEnd, agendaSaveDTO.getDuration()));
                     }
                     break;
                 case TUESDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getTuesday())) {
-                        agendas.addAll(createAgendasSegmented(resource, organization, createdDate, tempStart,
+                        agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate, tempStart,
                         tempEnd, agendaSaveDTO.getDuration()));
                     }
                     break;
                 case WEDNESDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getWednesday())) {
-                        agendas.addAll(createAgendasSegmented(resource, organization, createdDate, tempStart,
+                        agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate, tempStart,
                         tempEnd, agendaSaveDTO.getDuration()));
                     }
                     break;
                 case THURSDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getThursday())) {
-                        agendas.addAll(createAgendasSegmented(resource, organization, createdDate, tempStart,
+                        agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate, tempStart,
                         tempEnd, agendaSaveDTO.getDuration()));
                     }
                     break;
                 case FRIDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getFriday())) {
-                        agendas.addAll(createAgendasSegmented(resource, organization, createdDate, tempStart,
+                        agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate, tempStart,
                         tempEnd, agendaSaveDTO.getDuration()));
                     }
                     break;
                 case SATURDAY:
                     if (BooleanUtils.isTrue(agendaSaveDTO.getSaturday())) {
-                        agendas.addAll(createAgendasSegmented(resource, organization, createdDate, tempStart,
+                        agendas.addAll(createAgendasSegmented(resource, resourceType, organization, createdDate, tempStart,
                         tempEnd, agendaSaveDTO.getDuration()));
                     }
                     break;
@@ -437,12 +432,12 @@ public class AgendaService implements IAgendaService {
         return agendas;
     }
 
-    private List<Agenda> createAgendasSegmented(Resource resource, Organization organization, LocalDateTime createdDate,
+    private List<Agenda> createAgendasSegmented(Resource resource, ResourceType resourceType, Organization organization, LocalDateTime createdDate,
             ZonedDateTime tempStart, ZonedDateTime end, Long duration) {
         List<Agenda> agendas = new ArrayList<>();
         ZonedDateTime tempSegmentEnd = tempStart.plusMinutes(duration);
         while (!tempStart.isAfter(end) && !tempStart.isEqual(end)) {
-            agendas.add(new Agenda(createdDate, organization, resource, tempStart, tempSegmentEnd));
+            agendas.add(new Agenda(createdDate, organization, resource, resourceType, tempStart, tempSegmentEnd));
             tempStart = tempSegmentEnd;
             tempSegmentEnd = tempSegmentEnd.plusMinutes(duration);
         }

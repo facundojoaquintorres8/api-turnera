@@ -26,6 +26,9 @@
             </column>
             <column name="resource_id" type="bigint">
                 <constraints nullable="false" />
+            </column>
+            <column name="resource_type_id" type="bigint">
+                <constraints nullable="false" />
             </column>                        
 		</createTable>
 
@@ -42,6 +45,12 @@
             constraintName="fk_agendas_resources"
             referencedColumnNames="id"
             referencedTableName="resources"/>
+        <addForeignKeyConstraint
+            baseColumnNames="resource_type_id"
+            baseTableName="agendas"
+            constraintName="fk_agendas_resources_types"
+            referencedColumnNames="id"
+            referencedTableName="resources_types"/>
             
         <!-- permissions -->
         <insert

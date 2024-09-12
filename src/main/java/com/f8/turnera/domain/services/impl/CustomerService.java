@@ -66,23 +66,36 @@ public class CustomerService implements ICustomerService {
 
         Root<Customer> root = cq.from(Customer.class);
         predicates.add(cb.equal(root.join("organization", JoinType.LEFT), filter.getOrganizationId()));
-        if (filter.getBusinessName() != null) {
-            Predicate predicate = cb.like(cb.lower(root.get("businessName")),
-                    "%" + filter.getBusinessName().toLowerCase() + "%");
-            predicates.add(predicate);
-        }
-        if (filter.getBrandName() != null) {
-            Predicate predicate = cb.like(cb.lower(root.get("brandName")),
-                    "%" + filter.getBrandName().toLowerCase() + "%");
-            predicates.add(predicate);
-        }
-        if (filter.getEmail() != null) {
-            Predicate predicate = cb.like(cb.lower(root.get("email")), "%" + filter.getEmail().toLowerCase() + "%");
-            predicates.add(predicate);
-        }
-        if (filter.getPhone1() != null) {
-            Predicate predicate = cb.like(cb.lower(root.get("phone1")), "%" + filter.getPhone1().toLowerCase() + "%");
-            predicates.add(predicate);
+        if (filter.getAllProperties() != null) {
+            Predicate predicate1 = cb.like(cb.lower(root.get("businessName")), "%" + filter.getAllProperties().toLowerCase() + "%");
+            Predicate predicate2 = cb.like(cb.lower(root.get("email")), "%" + filter.getAllProperties().toLowerCase() + "%");
+            Predicate predicate3 = cb.like(cb.lower(root.get("phone1")), "%" + filter.getAllProperties().toLowerCase() + "%");
+            Predicate predicate4 = cb.like(cb.lower(root.get("cuit")), "%" + filter.getAllProperties().toLowerCase() + "%");
+            Predicate finalPredicate = cb.or(predicate1, predicate2, predicate3, predicate4);
+            predicates.add(finalPredicate);
+        } else {
+            if (filter.getBusinessName() != null) {
+                Predicate predicate = cb.like(cb.lower(root.get("businessName")),
+                        "%" + filter.getBusinessName().toLowerCase() + "%");
+                predicates.add(predicate);
+            }
+            if (filter.getBrandName() != null) {
+                Predicate predicate = cb.like(cb.lower(root.get("brandName")),
+                        "%" + filter.getBrandName().toLowerCase() + "%");
+                predicates.add(predicate);
+            }
+            if (filter.getEmail() != null) {
+                Predicate predicate = cb.like(cb.lower(root.get("email")), "%" + filter.getEmail().toLowerCase() + "%");
+                predicates.add(predicate);
+            }
+            if (filter.getPhone1() != null) {
+                Predicate predicate = cb.like(cb.lower(root.get("phone1")), "%" + filter.getPhone1().toLowerCase() + "%");
+                predicates.add(predicate);
+            }
+            if (filter.getCuit() != null) {
+                Predicate predicate = cb.like(cb.lower(root.get("cuit")), "%" + filter.getCuit().toLowerCase() + "%");
+                predicates.add(predicate);
+            }
         }
         if (filter.getActive() != null) {
             Predicate predicate = cb.equal(root.get("active"), filter.getActive());

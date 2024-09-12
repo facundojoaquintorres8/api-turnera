@@ -47,6 +47,11 @@ public class Agenda {
     @NotNull
     private Resource resource;
 
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "resource_type_id")
+    @NotNull
+    private ResourceType resourceType;
+
     @Column(name = "start_date")
     @NotNull
     private ZonedDateTime startDate;
@@ -62,12 +67,14 @@ public class Agenda {
     public Agenda() {
     }
 
-    public Agenda(LocalDateTime createdDate, Organization organization, Resource resource, ZonedDateTime startDate,
+    public Agenda(LocalDateTime createdDate, Organization organization, Resource resource, ResourceType resourceType,
+            ZonedDateTime startDate,
             ZonedDateTime endDate) {
         this.active = true;
         this.createdDate = createdDate;
         this.organization = organization;
         this.resource = resource;
+        this.resourceType = resourceType;
         this.startDate = startDate;
         this.endDate = endDate;
     }

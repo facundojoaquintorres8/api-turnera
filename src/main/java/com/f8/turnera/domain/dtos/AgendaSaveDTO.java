@@ -14,6 +14,8 @@ public class AgendaSaveDTO {
     @NotNull
     private ResourceDTO resource;
     @NotNull
+    private ResourceTypeDTO resourceType;
+    @NotNull
     private LocalDate startDate;
     @NotNull
     private LocalTime startHour;
