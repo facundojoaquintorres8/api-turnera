@@ -121,6 +121,9 @@ public class CustomerService implements ICustomerService {
                     case "phone1":
                         result.sort(Comparator.comparing(Customer::getPhone1, String::compareToIgnoreCase));
                         break;
+                    case "active":
+                        result.sort(Comparator.comparing(Customer::getActive));
+                        break;
                     default:
                         break;
                 }
@@ -141,6 +144,9 @@ public class CustomerService implements ICustomerService {
                         break;
                     case "phone1":
                         result.sort(Comparator.comparing(Customer::getPhone1, String::compareToIgnoreCase).reversed());
+                        break;
+                    case "active":
+                        result.sort(Comparator.comparing(Customer::getActive).reversed());
                         break;
                     default:
                         break;

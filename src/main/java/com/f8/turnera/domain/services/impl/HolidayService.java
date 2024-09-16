@@ -101,6 +101,9 @@ public class HolidayService implements IHolidayService {
                     case "useInAgenda":
                         result.sort(Comparator.comparing(Holiday::getUseInAgenda));
                         break;
+                    case "active":
+                        result.sort(Comparator.comparing(Holiday::getActive));
+                        break;
                     default:
                         break;
                 }
@@ -115,6 +118,9 @@ public class HolidayService implements IHolidayService {
                         break;
                     case "useInAgenda":
                         result.sort(Comparator.comparing(Holiday::getUseInAgenda).reversed());
+                        break;
+                    case "active":
+                        result.sort(Comparator.comparing(Holiday::getActive).reversed());
                         break;
                     default:
                         break;

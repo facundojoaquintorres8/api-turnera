@@ -99,6 +99,9 @@ public class ResourceService implements IResourceService {
                     result.sort(Comparator.comparing(Resource::getCode,
                             Comparator.nullsFirst(String::compareToIgnoreCase)));
                     break;
+                case "active":
+                    result.sort(Comparator.comparing(Resource::getActive));
+                    break;
                 default:
                     break;
                 }
@@ -111,6 +114,9 @@ public class ResourceService implements IResourceService {
                     result.sort(
                             Comparator.comparing(Resource::getCode, Comparator.nullsFirst(String::compareToIgnoreCase))
                                     .reversed());
+                    break;
+                case "active":
+                    result.sort(Comparator.comparing(Resource::getActive).reversed());
                     break;
                 default:
                     break;

@@ -92,6 +92,9 @@ public class ProfileService implements IProfileService {
                 case "description":
                     result.sort(Comparator.comparing(Profile::getDescription, String::compareToIgnoreCase));
                     break;
+                case "active":
+                    result.sort(Comparator.comparing(Profile::getActive));
+                    break;
                 default:
                     break;
                 }
@@ -99,6 +102,9 @@ public class ProfileService implements IProfileService {
                 switch (filter.getSort().get(1)) {
                 case "description":
                     result.sort(Comparator.comparing(Profile::getDescription, String::compareToIgnoreCase).reversed());
+                    break;
+                case "active":
+                    result.sort(Comparator.comparing(Profile::getActive).reversed());
                     break;
                 default:
                     break;

@@ -83,6 +83,9 @@ public class ResourceTypeService implements IResourceTypeService {
                 case "description":
                     result.sort(Comparator.comparing(ResourceType::getDescription, String::compareToIgnoreCase));
                     break;
+                case "active":
+                    result.sort(Comparator.comparing(ResourceType::getActive));
+                    break;
                 default:
                     break;
                 }
@@ -91,6 +94,9 @@ public class ResourceTypeService implements IResourceTypeService {
                 case "description":
                     result.sort(
                             Comparator.comparing(ResourceType::getDescription, String::compareToIgnoreCase).reversed());
+                    break;
+                case "active":
+                    result.sort(Comparator.comparing(ResourceType::getActive).reversed());
                     break;
                 default:
                     break;

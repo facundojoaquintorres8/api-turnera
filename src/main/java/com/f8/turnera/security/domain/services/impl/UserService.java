@@ -112,6 +112,9 @@ public class UserService implements IUserService {
                     case "username":
                         result.sort(Comparator.comparing(User::getUsername, String::compareToIgnoreCase));
                         break;
+                    case "active":
+                        result.sort(Comparator.comparing(User::getActive));
+                        break;
                     default:
                         break;
                 }
@@ -125,6 +128,9 @@ public class UserService implements IUserService {
                         break;
                     case "username":
                         result.sort(Comparator.comparing(User::getUsername, String::compareToIgnoreCase).reversed());
+                        break;
+                    case "active":
+                        result.sort(Comparator.comparing(User::getActive).reversed());
                         break;
                     default:
                         break;
