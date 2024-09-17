@@ -19,4 +19,6 @@ public interface IAgendaService {
     ResponseDTO deleteById(String token, Long id) throws Exception;
 
     ResponseDTO desactivate(String token, Long id) throws Exception;
+
+    ResponseDTO activate(String token, Long id) throws Exception;
 }

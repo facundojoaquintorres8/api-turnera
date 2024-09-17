@@ -52,11 +52,19 @@ public class AgendaController {
     }
 
     @PutMapping("agendas/{id}/desactivate")
-    @PreAuthorize("hasAuthority('agendas.read')")
-    public ResponseEntity<ResponseDTO> desactivateAgenda(
+    @PreAuthorize("hasAuthority('agendas.write')")
+    public ResponseEntity<ResponseDTO> desactivate(
             @RequestHeader(name = SecurityConstants.HEADER_TOKEN) String token,
             @PathVariable Long id) throws Exception {
         return new ResponseEntity<>(service.desactivate(token, id), HttpStatus.OK);
+    }
+    
+    @PutMapping("agendas/{id}/activate")
+    @PreAuthorize("hasAuthority('agendas.write')")
+    public ResponseEntity<ResponseDTO> activate(
+            @RequestHeader(name = SecurityConstants.HEADER_TOKEN) String token,
+            @PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(service.activate(token, id), HttpStatus.OK);
     }
 
 }

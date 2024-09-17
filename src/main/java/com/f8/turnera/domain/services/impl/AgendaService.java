@@ -485,5 +485,20 @@ public class AgendaService implements IAgendaService {
 
         return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
     }
+    
+    @Override
+    public ResponseDTO activate(String token, Long id) throws Exception {
+        Optional<Agenda> agenda = agendaRepository.findByIdAndOrganizationId(id, OrganizationHelper.getOrganizationId(token));
+        if (!agenda.isPresent()) {
+            throw new NoContentException("Disponibilidad no encontrada - " + id);
+        }
+
+        agenda.ifPresent(a -> {
+            a.setActive(true);
+            agendaRepository.save(a);
+        });
+
+        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
+    }
 
 }
