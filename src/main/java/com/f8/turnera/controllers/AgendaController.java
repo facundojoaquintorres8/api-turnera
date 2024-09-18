@@ -1,9 +1,10 @@
 package com.f8.turnera.controllers;
 
 import com.f8.turnera.config.SecurityConstants;
-import com.f8.turnera.domain.dtos.AgendaSaveDTO;
+import com.f8.turnera.domain.dtos.CreateAgendaDTO;
 import com.f8.turnera.domain.dtos.AppointmentFilterDTO;
 import com.f8.turnera.domain.dtos.ResponseDTO;
+import com.f8.turnera.domain.dtos.UpdateAgendaDTO;
 import com.f8.turnera.domain.services.IAgendaService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +36,28 @@ public class AgendaController {
         return new ResponseEntity<>(service.findAllByFilter(token, request), HttpStatus.OK);
     }
 
+    @GetMapping("/agendas/{id}")
+    @PreAuthorize("hasAuthority('agendas.read')")
+    public ResponseEntity<ResponseDTO> getAgenda(
+            @RequestHeader(name = SecurityConstants.HEADER_TOKEN) String token,
+            @PathVariable Long id) throws Exception {
+        return new ResponseEntity<>(service.findById(token, id), HttpStatus.OK);
+    }
+
     @PostMapping("/agendas")
     @PreAuthorize("hasAuthority('agendas.write')")
     public ResponseEntity<ResponseDTO> createAgenda(
             @RequestHeader(name = SecurityConstants.HEADER_TOKEN) String token,
-            @RequestBody AgendaSaveDTO request) throws Exception {
+            @RequestBody CreateAgendaDTO request) throws Exception {
         return new ResponseEntity<>(service.create(token, request), HttpStatus.OK);
+    }
+
+    @PutMapping("/agendas")
+    @PreAuthorize("hasAuthority('agendas.write')")
+    public ResponseEntity<ResponseDTO> updateAgenda(
+            @RequestHeader(name = SecurityConstants.HEADER_TOKEN) String token,
+            @RequestBody UpdateAgendaDTO request) throws Exception {
+        return new ResponseEntity<>(service.updateAgenda(token, request), HttpStatus.OK);
     }
 
     @DeleteMapping("agendas/{id}")

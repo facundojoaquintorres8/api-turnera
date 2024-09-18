@@ -28,11 +28,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.f8.turnera.domain.dtos.AgendaDTO;
-import com.f8.turnera.domain.dtos.AgendaSaveDTO;
+import com.f8.turnera.domain.dtos.CreateAgendaDTO;
 import com.f8.turnera.domain.dtos.AppointmentFilterDTO;
 import com.f8.turnera.domain.dtos.AppointmentStatusEnum;
 import com.f8.turnera.domain.dtos.RepeatTypeEnum;
 import com.f8.turnera.domain.dtos.ResponseDTO;
+import com.f8.turnera.domain.dtos.UpdateAgendaDTO;
 import com.f8.turnera.domain.entities.Agenda;
 import com.f8.turnera.domain.entities.Appointment;
 import com.f8.turnera.domain.entities.Organization;
@@ -190,7 +191,7 @@ public class AgendaService implements IAgendaService {
     }
 
     @Override
-    public ResponseDTO create(String token, AgendaSaveDTO agendaSaveDTO) throws Exception {
+    public ResponseDTO create(String token, CreateAgendaDTO agendaSaveDTO) throws Exception {
         Organization organization = MapperHelper.modelMapper().map(organizationService.findById(token).getData(),
                 Organization.class);
         Resource resource = MapperHelper.modelMapper()
@@ -322,7 +323,7 @@ public class AgendaService implements IAgendaService {
         return new ResponseDTO(HttpStatus.OK.value(), "Se generaron " + agendas.size() + " Disponibilidades");
     }
 
-    private List<Agenda> createAgendasWeekly(AgendaSaveDTO agendaSaveDTO,
+    private List<Agenda> createAgendasWeekly(CreateAgendaDTO agendaSaveDTO,
             Resource resource, ResourceType resourceType, Organization organization, LocalDateTime createdDate,
             ZonedDateTime tempStart, ZonedDateTime tempEnd, ZonedDateTime finalize) {
         List<Agenda> agendas = new ArrayList<>();
@@ -370,7 +371,7 @@ public class AgendaService implements IAgendaService {
         return agendas;
     }
 
-    private List<Agenda> createAgendasSegmentedWeekly(AgendaSaveDTO agendaSaveDTO,
+    private List<Agenda> createAgendasSegmentedWeekly(CreateAgendaDTO agendaSaveDTO,
             Resource resource, ResourceType resourceType, Organization organization, LocalDateTime createdDate,
             ZonedDateTime tempStart, ZonedDateTime tempEnd, ZonedDateTime finalize,
             ZoneId zoneId, Integer plusDays) {
@@ -442,6 +443,41 @@ public class AgendaService implements IAgendaService {
             tempSegmentEnd = tempSegmentEnd.plusMinutes(duration);
         }
         return agendas;
+    }
+
+    @Override
+    public ResponseDTO updateAgenda(String token, UpdateAgendaDTO request) throws Exception {
+        Optional<Agenda> agenda = agendaRepository.findByIdAndOrganizationId(request.getId(), OrganizationHelper.getOrganizationId(token));
+        if (!agenda.isPresent()) {
+            throw new NoContentException("Disponibilidad no encontrada - " + request.getId());
+        }
+        Resource resource = MapperHelper.modelMapper()
+                .map(resourceService.findById(token, request.getResource().getId()).getData(), Resource.class);
+        ResourceType resourceType = MapperHelper.modelMapper()
+                .map(resourceTypeService.findById(token, request.getResourceType().getId()).getData(), ResourceType.class);
+
+                
+        ZoneId zoneId = ZoneId.of(request.getZoneId());
+        ZonedDateTime startDate = ZonedDateTime.of(request.getStartDate(), request.getStartHour(), zoneId);
+        ZonedDateTime endDate = ZonedDateTime.of(request.getEndDate(), request.getEndHour(), zoneId);
+        if (startDate.isEqual(endDate) || startDate.isAfter(endDate)) {
+            throw new BadRequestException("La fecha de inicio no puede ser igual o mayor a la de fin.");
+        }
+
+        agenda.ifPresent(a -> {
+            a.setActive(request.getActive());
+            a.setResource(resource);
+            a.setResourceType(resourceType);
+            a.setStartDate(startDate);
+            a.setEndDate(endDate);
+
+            agendaRepository.save(a);
+        });
+
+        // TODO: enviar email de actualización de turno
+
+        return new ResponseDTO(HttpStatus.OK.value(),
+                MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
     }
 
     @Override

@@ -9,8 +9,10 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class AgendaSaveDTO {
+public class UpdateAgendaDTO {
 
+    @NotNull
+    private Long id;
     @NotNull
     private ResourceDTO resource;
     @NotNull
@@ -20,21 +22,12 @@ public class AgendaSaveDTO {
     @NotNull
     private LocalTime startHour;
     @NotNull
+    private LocalDate endDate;
+    @NotNull
     private LocalTime endHour;
     @NotBlank
     private String zoneId;
-    private Boolean segmented;
-    private Long duration;
-    private Boolean repeat;
-    private LocalDate finalize;
-    private RepeatTypeEnum repeatType;
-    private Boolean sunday;
-    private Boolean monday;
-    private Boolean tuesday;
-    private Boolean wednesday;
-    private Boolean thursday;
-    private Boolean friday;
-    private Boolean saturday;
-    private Boolean omitHolidays;
+    @NotNull
+    private Boolean active;
 
 }
