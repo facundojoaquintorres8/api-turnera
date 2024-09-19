@@ -13,6 +13,6 @@ public class AgendaDTO {
     private ResourceTypeDTO resourceType;
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
-    private AppointmentDTO lastAppointment;
+    private SmallAppointmentDTO lastAppointment;
 
 }

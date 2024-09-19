@@ -3,9 +3,10 @@ package com.f8.turnera.domain.dtos;
 import lombok.Data;
 
 @Data
-public class AppointmentDTO {
+public class SmallAppointmentDTO {
+
     private Long id;
-    private AgendaDTO agenda;
-    private CustomerDTO customer;
+    private String customerBusinessName;
     private AppointmentStatusDTO lastAppointmentStatus;
+
 }

@@ -2,6 +2,7 @@ package com.f8.turnera.controllers;
 
 import com.f8.turnera.config.SecurityConstants;
 import com.f8.turnera.domain.dtos.AppointmentChangeStatusDTO;
+import com.f8.turnera.domain.dtos.AppointmentFilterDTO;
 import com.f8.turnera.domain.dtos.AppointmentSaveDTO;
 import com.f8.turnera.domain.dtos.ResponseDTO;
 import com.f8.turnera.domain.services.IAppointmentService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -22,6 +24,14 @@ public class AppointmentController {
 
     @Autowired
     private IAppointmentService service;
+
+    @GetMapping("/appointments/findAllByFilter")
+    @PreAuthorize("hasAuthority('agendas.read')")
+    public ResponseEntity<ResponseDTO> findAllByFilter(
+            @RequestHeader(name = SecurityConstants.HEADER_TOKEN) String token,
+            AppointmentFilterDTO request) throws Exception {
+        return new ResponseEntity<>(service.findAllByFilter(token, request), HttpStatus.OK);
+    }
 
     @PostMapping("/appointments")
     @PreAuthorize("hasAuthority('appointments.book')")
