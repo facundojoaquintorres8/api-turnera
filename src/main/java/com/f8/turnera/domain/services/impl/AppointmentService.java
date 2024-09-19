@@ -101,10 +101,10 @@ public class AppointmentService implements IAppointmentService {
                     sort = root.get("agenda").get("endDate");
                     break;
                 case "resource":
-                    sort = root.get("agenda").get("resource").get("description");
+                    sort = cb.lower(root.get("agenda").get("resource").get("description"));
                     break;
                 case "resourceType":
-                    sort = root.get("agenda").get("resourceType").get("description");
+                    sort = cb.lower(root.get("agenda").get("resourceType").get("description"));
                     break;
                 default:
                     break;

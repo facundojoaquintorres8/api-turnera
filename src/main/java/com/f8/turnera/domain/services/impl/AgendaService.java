@@ -6,7 +6,6 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -14,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -134,41 +134,31 @@ public class AgendaService implements IAgendaService {
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        List<Agenda> result = em.createQuery(cq).getResultList();
         if (filter.getSort() != null) {
+            @SuppressWarnings("rawtypes")
+            Expression sort = root.get("id");
+            switch (filter.getSort().get(1)) {
+                case "startDate":
+                    sort = root.get("startDate");
+                    break;
+                case "endDate":
+                    sort = root.get("endDate");
+                    break;
+                case "resourceDescription":
+                    sort = cb.lower(root.get("resource").get("description"));
+                    break;
+                default:
+                    break;
+            }
             if (filter.getSort().get(0).equals("ASC")) {
-                switch (filter.getSort().get(1)) {
-                    case "startDate":
-                        result.sort(Comparator.comparing(Agenda::getStartDate));
-                        break;
-                    case "endDate":
-                        result.sort(Comparator.comparing(Agenda::getEndDate));
-                        break;
-                    case "resourceDescription":
-                        result.sort(
-                                Comparator.comparing(x -> x.getResource().getDescription(),
-                                        String::compareToIgnoreCase));
-                        break;
-                    default:
-                        break;
-                }
+                cq.orderBy(cb.asc(sort));
             } else if (filter.getSort().get(0).equals("DESC")) {
-                switch (filter.getSort().get(1)) {
-                    case "startDate":
-                        result.sort(Comparator.comparing(Agenda::getStartDate).reversed());
-                        break;
-                    case "endDate":
-                        result.sort(Comparator.comparing(Agenda::getEndDate).reversed());
-                        break;
-                    case "resourceDescription":
-                        result.sort(Comparator.comparing(x -> x.getResource().getDescription(),
-                                Comparator.nullsFirst(String::compareToIgnoreCase).reversed()));
-                        break;
-                    default:
-                        break;
-                }
+                cq.orderBy(cb.desc(sort));
             }
         }
+
+        List<Agenda> result = em.createQuery(cq).getResultList();
+
         int count = result.size();
         int fromIndex = Constants.ITEMS_PER_PAGE * (filter.getPage());
         int toIndex = fromIndex + Constants.ITEMS_PER_PAGE > count ? count : fromIndex + Constants.ITEMS_PER_PAGE;

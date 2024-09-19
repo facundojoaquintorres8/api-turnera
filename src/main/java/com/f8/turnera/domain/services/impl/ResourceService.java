@@ -2,7 +2,6 @@ package com.f8.turnera.domain.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +10,7 @@ import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -88,41 +88,31 @@ public class ResourceService implements IResourceService {
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        List<Resource> result = em.createQuery(cq).getResultList();
         if (filter.getSort() != null) {
+            @SuppressWarnings("rawtypes")
+            Expression sort = root.get("id");
+            switch (filter.getSort().get(1)) {
+                case "description":
+                    sort = cb.lower(root.get("description"));
+                    break;
+                case "code":
+                    sort = cb.lower(root.get("code"));
+                    break;
+                case "active":
+                    sort = root.get("active");
+                    break;
+                default:
+                    break;
+            }
             if (filter.getSort().get(0).equals("ASC")) {
-                switch (filter.getSort().get(1)) {
-                case "description":
-                    result.sort(Comparator.comparing(Resource::getDescription, String::compareToIgnoreCase));
-                    break;
-                case "code":
-                    result.sort(Comparator.comparing(Resource::getCode,
-                            Comparator.nullsFirst(String::compareToIgnoreCase)));
-                    break;
-                case "active":
-                    result.sort(Comparator.comparing(Resource::getActive));
-                    break;
-                default:
-                    break;
-                }
+                cq.orderBy(cb.asc(sort));
             } else if (filter.getSort().get(0).equals("DESC")) {
-                switch (filter.getSort().get(1)) {
-                case "description":
-                    result.sort(Comparator.comparing(Resource::getDescription, String::compareToIgnoreCase).reversed());
-                    break;
-                case "code":
-                    result.sort(
-                            Comparator.comparing(Resource::getCode, Comparator.nullsFirst(String::compareToIgnoreCase))
-                                    .reversed());
-                    break;
-                case "active":
-                    result.sort(Comparator.comparing(Resource::getActive).reversed());
-                    break;
-                default:
-                    break;
-                }
+                cq.orderBy(cb.desc(sort));
             }
         }
+
+        List<Resource> result = em.createQuery(cq).getResultList();
+
         int count = result.size();
         int fromIndex = Constants.ITEMS_PER_PAGE * (filter.getPage());
         int toIndex = fromIndex + Constants.ITEMS_PER_PAGE > count ? count : fromIndex + Constants.ITEMS_PER_PAGE;

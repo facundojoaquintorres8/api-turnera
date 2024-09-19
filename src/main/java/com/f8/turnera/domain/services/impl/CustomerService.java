@@ -2,13 +2,13 @@ package com.f8.turnera.domain.services.impl;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
@@ -104,55 +104,37 @@ public class CustomerService implements ICustomerService {
 
         cq.where(predicates.toArray(new Predicate[0]));
 
-        List<Customer> result = em.createQuery(cq).getResultList();
         if (filter.getSort() != null) {
+            @SuppressWarnings("rawtypes")
+            Expression sort = root.get("id");
+            switch (filter.getSort().get(1)) {
+                case "businessName":
+                    sort = cb.lower(root.get("businessName"));
+                    break;
+                case "brandName":
+                    sort = cb.lower(root.get("brandName"));
+                    break;
+                case "email":
+                    sort = cb.lower(root.get("email"));
+                    break;
+                case "phone1":
+                    sort = cb.lower(root.get("phone1"));
+                    break;
+                case "active":
+                    sort = root.get("active");
+                    break;
+                default:
+                    break;
+            }
             if (filter.getSort().get(0).equals("ASC")) {
-                switch (filter.getSort().get(1)) {
-                    case "businessName":
-                        result.sort(Comparator.comparing(Customer::getBusinessName, String::compareToIgnoreCase));
-                        break;
-                    case "brandName":
-                        result.sort(Comparator.comparing(Customer::getBrandName,
-                                Comparator.nullsFirst(String::compareToIgnoreCase)));
-                        break;
-                    case "email":
-                        result.sort(Comparator.comparing(Customer::getEmail, String::compareToIgnoreCase));
-                        break;
-                    case "phone1":
-                        result.sort(Comparator.comparing(Customer::getPhone1, String::compareToIgnoreCase));
-                        break;
-                    case "active":
-                        result.sort(Comparator.comparing(Customer::getActive));
-                        break;
-                    default:
-                        break;
-                }
+                cq.orderBy(cb.asc(sort));
             } else if (filter.getSort().get(0).equals("DESC")) {
-                switch (filter.getSort().get(1)) {
-                    case "businessName":
-                        result.sort(
-                                Comparator.comparing(Customer::getBusinessName, String::compareToIgnoreCase)
-                                        .reversed());
-                        break;
-                    case "brandName":
-                        result.sort(Comparator
-                                .comparing(Customer::getBrandName, Comparator.nullsFirst(String::compareToIgnoreCase))
-                                .reversed());
-                        break;
-                    case "email":
-                        result.sort(Comparator.comparing(Customer::getEmail, String::compareToIgnoreCase).reversed());
-                        break;
-                    case "phone1":
-                        result.sort(Comparator.comparing(Customer::getPhone1, String::compareToIgnoreCase).reversed());
-                        break;
-                    case "active":
-                        result.sort(Comparator.comparing(Customer::getActive).reversed());
-                        break;
-                    default:
-                        break;
-                }
+                cq.orderBy(cb.desc(sort));
             }
         }
+
+        List<Customer> result = em.createQuery(cq).getResultList();
+
         int count = result.size();
         int fromIndex = Constants.ITEMS_PER_PAGE * (filter.getPage());
         int toIndex = fromIndex + Constants.ITEMS_PER_PAGE > count ? count : fromIndex + Constants.ITEMS_PER_PAGE;
