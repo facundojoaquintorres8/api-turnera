@@ -87,6 +87,10 @@ public class AppointmentService implements IAppointmentService {
             Predicate predicate = cb.equal(root.join("customer", JoinType.LEFT), filter.getCustomerId());
             predicates.add(predicate);
         }
+        if (filter.getResourceId() != null) {
+            Predicate predicate = cb.equal(root.join("agenda", JoinType.LEFT).get("resource"), filter.getResourceId());
+            predicates.add(predicate);
+        }
 
         cq.where(predicates.toArray(new Predicate[0]));
 
