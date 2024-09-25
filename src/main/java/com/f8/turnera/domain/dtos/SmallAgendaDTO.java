@@ -1,12 +1,11 @@
 package com.f8.turnera.domain.dtos;
 
 import java.time.ZonedDateTime;
-import java.util.List;
 
 import lombok.Data;
 
 @Data
-public class AgendaDTO {
+public class SmallAgendaDTO {
 
     private Long id;
     private Boolean active;
@@ -15,6 +14,5 @@ public class AgendaDTO {
     private ZonedDateTime startDate;
     private ZonedDateTime endDate;
     private SmallAppointmentDTO lastAppointment;
-    private List<FullAppointmentDTO> appointments;
 
 }

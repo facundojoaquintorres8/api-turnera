@@ -2,7 +2,9 @@ package com.f8.turnera.domain.entities;
 
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,16 +12,21 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "agendas")
-@Data
+@Setter
+@Getter
 public class Agenda {
 
     @Id
@@ -64,6 +71,10 @@ public class Agenda {
     @JoinColumn(name = "last_appointment_id")
     private Appointment lastAppointment;
 
+    @OneToMany(mappedBy = "agenda", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private Set<Appointment> appointments;
+
     public Agenda() {
     }
 
@@ -78,4 +89,5 @@ public class Agenda {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
 }

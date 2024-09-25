@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class AppointmentSaveDTO {
 
-    private AgendaDTO agenda;
+    private SmallAgendaDTO agenda;
     private CustomerDTO customer;
 
 }

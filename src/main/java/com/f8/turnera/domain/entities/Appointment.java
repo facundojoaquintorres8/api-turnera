@@ -1,6 +1,7 @@
 package com.f8.turnera.domain.entities;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -10,18 +11,22 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import com.f8.turnera.domain.dtos.AppointmentStatusEnum;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "appointments")
-@Data
+@Setter
+@Getter
 public class Appointment {
 
     @Id
@@ -43,6 +48,7 @@ public class Appointment {
     @ManyToOne(optional = false)
     @JoinColumn(name = "agenda_id")
     @NotNull
+    @JsonBackReference
     private Agenda agenda;
 
     @ManyToOne(optional = false)
@@ -52,6 +58,9 @@ public class Appointment {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "last_appointment_status_id")
     private AppointmentStatus lastAppointmentStatus;
+
+    @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
+    private Set<AppointmentStatus> appointmentStatus;
 
     public void addStatus(AppointmentStatusEnum appointmentStatus, String observations) {
         AppointmentStatus newAppointmentStatus = new AppointmentStatus(LocalDateTime.now(), this, appointmentStatus, observations);
@@ -67,4 +76,5 @@ public class Appointment {
 
     public Appointment() {
     }
+
 }

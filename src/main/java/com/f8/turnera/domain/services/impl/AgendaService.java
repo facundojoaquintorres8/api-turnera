@@ -27,8 +27,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.f8.turnera.domain.dtos.AgendaDTO;
+import com.f8.turnera.domain.dtos.SmallAgendaDTO;
 import com.f8.turnera.domain.dtos.CreateAgendaDTO;
+import com.f8.turnera.domain.dtos.AgendaDTO;
 import com.f8.turnera.domain.dtos.AppointmentFilterDTO;
 import com.f8.turnera.domain.dtos.AppointmentStatusEnum;
 import com.f8.turnera.domain.dtos.RepeatTypeEnum;
@@ -79,7 +80,7 @@ public class AgendaService implements IAgendaService {
 
         Page<Agenda> agendas = findByCriteria(filter);
         return new ResponseDTO(HttpStatus.OK.value(),
-                agendas.map(agenda -> MapperHelper.modelMapper().map(agenda, AgendaDTO.class)));
+                agendas.map(agenda -> MapperHelper.modelMapper().map(agenda, SmallAgendaDTO.class)));
     }
 
     private Page<Agenda> findByCriteria(AppointmentFilterDTO filter) {
@@ -176,7 +177,6 @@ public class AgendaService implements IAgendaService {
         if (!agenda.isPresent()) {
             throw new NoContentException("Disponibilidad no encontrada - " + id);
         }
-
         return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
     }
 
@@ -467,7 +467,7 @@ public class AgendaService implements IAgendaService {
         // TODO: enviar email de actualización de turno
 
         return new ResponseDTO(HttpStatus.OK.value(),
-                MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
+                MapperHelper.modelMapper().map(agenda.get(), SmallAgendaDTO.class));
     }
 
     @Override
@@ -482,7 +482,7 @@ public class AgendaService implements IAgendaService {
             agendaRepository.save(a);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
+        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), SmallAgendaDTO.class));
     }
 
     @Override
@@ -509,7 +509,7 @@ public class AgendaService implements IAgendaService {
             agendaRepository.save(a);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
+        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), SmallAgendaDTO.class));
     }
     
     @Override
@@ -524,7 +524,7 @@ public class AgendaService implements IAgendaService {
             agendaRepository.save(a);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), AgendaDTO.class));
+        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(agenda.get(), SmallAgendaDTO.class));
     }
 
 }

@@ -1,11 +1,12 @@
 package com.f8.turnera.domain.dtos;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
-public class AppointmentDTO {
+public class FullAppointmentDTO {
     private Long id;
-    private SmallAgendaDTO agenda;
     private CustomerDTO customer;
-    private AppointmentStatusDTO lastAppointmentStatus;
+    private List<AppointmentStatusDTO> appointmentStatus;
 }
