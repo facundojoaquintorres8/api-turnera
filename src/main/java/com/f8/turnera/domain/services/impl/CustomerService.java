@@ -33,7 +33,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -54,8 +53,7 @@ public class CustomerService implements ICustomerService {
 
         Page<Customer> customers = findByCriteria(filter);
 
-        return new ResponseDTO(HttpStatus.OK.value(),
-                customers.map(customer -> MapperHelper.modelMapper().map(customer, CustomerDTO.class)));
+        return new ResponseDTO(customers.map(customer -> MapperHelper.modelMapper().map(customer, CustomerDTO.class)));
     }
 
     private Page<Customer> findByCriteria(CustomerFilterDTO filter) {
@@ -149,8 +147,7 @@ public class CustomerService implements ICustomerService {
             throw new NoContentException("Cliente no encontrado - " + id);
         }
 
-        return new ResponseDTO(HttpStatus.OK.value(),
-                MapperHelper.modelMapper().map(customer.get(), CustomerDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(customer.get(), CustomerDTO.class));
     }
 
     @Override
@@ -166,7 +163,7 @@ public class CustomerService implements ICustomerService {
 
         customerRepository.save(customer);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(customer, CustomerDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(customer, CustomerDTO.class));
     }
 
     @Override
@@ -205,8 +202,7 @@ public class CustomerService implements ICustomerService {
             customerRepository.save(c);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(),
-                MapperHelper.modelMapper().map(customer.get(), CustomerDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(customer.get(), CustomerDTO.class));
     }
 
     @Override
@@ -218,6 +214,6 @@ public class CustomerService implements ICustomerService {
 
         customerRepository.delete(customer.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), "Borrado exitoso!");
+        return new ResponseDTO(null, "Borrado exitoso!");
     }
 }

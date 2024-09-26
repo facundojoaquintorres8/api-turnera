@@ -13,7 +13,6 @@ import com.f8.turnera.util.MapperHelper;
 import com.f8.turnera.util.OrganizationHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -30,8 +29,7 @@ public class OrganizationService implements IOrganizationService {
             throw new NoContentException("Organización no encontrada - " + id);
         }
 
-        return new ResponseDTO(HttpStatus.OK.value(),
-                MapperHelper.modelMapper().map(organization.get(), OrganizationDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(organization.get(), OrganizationDTO.class));
     }
 
     @Override
@@ -56,8 +54,7 @@ public class OrganizationService implements IOrganizationService {
             organizationRepository.save(o);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(),
-                MapperHelper.modelMapper().map(organization.get(), OrganizationDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(organization.get(), OrganizationDTO.class));
     }
 
 }

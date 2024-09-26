@@ -1,9 +1,8 @@
 package com.f8.turnera.config;
 
 import java.security.Key;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -12,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -51,9 +50,8 @@ public class TokenUtil {
 	public static UsernamePasswordAuthenticationToken getAuthentication(final String token) {
 		Claims claims = getAllClaims(token.replace(SecurityConstants.TOKEN_PREFIX, ""));
 
-		final Collection<SimpleGrantedAuthority> authorities = Arrays
-				.stream(claims.get(SecurityConstants.PERMISSIONS_KEY).toString().split(","))
-				.map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+		List<GrantedAuthority> authorities = AuthorityUtils
+				.commaSeparatedStringToAuthorityList(claims.get(SecurityConstants.PERMISSIONS_KEY).toString());
 
 		org.springframework.security.core.userdetails.User principal = new org.springframework.security.core.userdetails.User(
 				claims.getSubject(), "", authorities);

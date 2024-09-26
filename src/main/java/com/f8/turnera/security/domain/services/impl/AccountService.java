@@ -29,7 +29,6 @@ import com.f8.turnera.util.MapperHelper;
 import com.f8.turnera.util.OrganizationHelper;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -92,7 +91,7 @@ public class AccountService implements IAccountService {
 
         emailService.sendOrganizationActivationEmail(user);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user, UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user, UserDTO.class));
     }
 
     @Override
@@ -117,7 +116,7 @@ public class AccountService implements IAccountService {
         userRepository.save(user.get());
         organizationRepository.save(user.get().getOrganization());
         
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user.get(), UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user.get(), UserDTO.class));
     }
 
     private void addDefaultProfiles(User user) {
@@ -146,7 +145,7 @@ public class AccountService implements IAccountService {
 
         emailService.sendPasswordResetRequestEmail(user.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user.get(), UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user.get(), UserDTO.class));
     }
 
     @Override
@@ -168,7 +167,7 @@ public class AccountService implements IAccountService {
 
         userRepository.save(user.get());
         
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user.get(), UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user.get(), UserDTO.class));
     }
 
     @Override
@@ -186,7 +185,7 @@ public class AccountService implements IAccountService {
 
         userRepository.save(user.get());
         
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user.get(), UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user.get(), UserDTO.class));
     }
 
 }

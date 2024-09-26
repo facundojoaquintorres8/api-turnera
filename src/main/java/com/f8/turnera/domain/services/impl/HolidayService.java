@@ -35,7 +35,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,8 +55,7 @@ public class HolidayService implements IHolidayService {
                 OrganizationHelper.getOrganizationId(token));
 
         Page<Holiday> holidays = findByCriteria(filter);
-        return new ResponseDTO(HttpStatus.OK.value(),
-                holidays.map(holiday -> MapperHelper.modelMapper().map(holiday, HolidayDTO.class)));
+        return new ResponseDTO(holidays.map(holiday -> MapperHelper.modelMapper().map(holiday, HolidayDTO.class)));
     }
 
     private Page<Holiday> findByCriteria(HolidayFilterDTO filter) {
@@ -134,7 +132,7 @@ public class HolidayService implements IHolidayService {
             throw new NoContentException("Feriado no encontrado - " + id);
         }
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(holiday.get(), HolidayDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(holiday.get(), HolidayDTO.class));
     }
 
     @Override
@@ -154,7 +152,7 @@ public class HolidayService implements IHolidayService {
 
         holidayRepository.save(holiday);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(holiday, HolidayDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(holiday, HolidayDTO.class));
     }
 
     @Override
@@ -179,7 +177,7 @@ public class HolidayService implements IHolidayService {
             holidayRepository.save(r);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(holiday.get(), HolidayDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(holiday.get(), HolidayDTO.class));
     }
 
     @Override
@@ -191,7 +189,7 @@ public class HolidayService implements IHolidayService {
 
         holidayRepository.delete(holiday.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), "Borrado exitoso!");
+        return new ResponseDTO(null, "Borrado exitoso!");
     }
 
     @Override

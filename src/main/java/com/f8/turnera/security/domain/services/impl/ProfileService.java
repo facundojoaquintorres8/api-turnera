@@ -39,7 +39,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -62,7 +61,7 @@ public class ProfileService implements IProfileService {
         filter.setOrganizationId(OrganizationHelper.getOrganizationId(token));
 
         Page<Profile> profiles = findByCriteria(filter);
-        return new ResponseDTO(HttpStatus.OK.value(), profiles.map(profile -> MapperHelper.modelMapper().map(profile, ProfileDTO.class)));
+        return new ResponseDTO(profiles.map(profile -> MapperHelper.modelMapper().map(profile, ProfileDTO.class)));
     }
 
     private Page<Profile> findByCriteria(ProfileFilterDTO filter) {
@@ -121,7 +120,7 @@ public class ProfileService implements IProfileService {
             throw new NoContentException("Perfil no encontrado - " + id);
         }
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(profile.get(), ProfileDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(profile.get(), ProfileDTO.class));
     }
 
     @Override
@@ -136,7 +135,7 @@ public class ProfileService implements IProfileService {
 
         profileRepository.save(profile);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(profile, ProfileDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(profile, ProfileDTO.class));
     }
 
     @Override
@@ -162,7 +161,7 @@ public class ProfileService implements IProfileService {
             profileRepository.save(p);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(profile.get(), ProfileDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(profile.get(), ProfileDTO.class));
     }
 
     private Set<Permission> addPermissions(ProfileDTO profileDTO) throws Exception {
@@ -187,6 +186,6 @@ public class ProfileService implements IProfileService {
 
         profileRepository.delete(profile.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), "Borrado exitoso!");
+        return new ResponseDTO(null, "Borrado exitoso!");
     }
 }

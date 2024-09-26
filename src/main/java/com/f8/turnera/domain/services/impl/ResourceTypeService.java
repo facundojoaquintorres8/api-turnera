@@ -32,7 +32,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -52,7 +51,7 @@ public class ResourceTypeService implements IResourceTypeService {
         filter.setOrganizationId(OrganizationHelper.getOrganizationId(token));
 
         Page<ResourceType> resourcesTypes = findByCriteria(filter);
-        return new ResponseDTO(HttpStatus.OK.value(), resourcesTypes
+        return new ResponseDTO(resourcesTypes
                 .map(resourceType -> MapperHelper.modelMapper().map(resourceType, ResourceTypeDTO.class)));
     }
 
@@ -112,7 +111,7 @@ public class ResourceTypeService implements IResourceTypeService {
             throw new NoContentException("Tipo de Recurso no encontrado - " + id);
         }
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(resourceType.get(), ResourceTypeDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(resourceType.get(), ResourceTypeDTO.class));
     }
 
     @Override
@@ -126,7 +125,7 @@ public class ResourceTypeService implements IResourceTypeService {
 
         resourceTypeRepository.save(resourceType);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(resourceType, ResourceTypeDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(resourceType, ResourceTypeDTO.class));
     }
 
     @Override
@@ -150,7 +149,7 @@ public class ResourceTypeService implements IResourceTypeService {
             resourceTypeRepository.save(rt);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(resourceType.get(), ResourceTypeDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(resourceType.get(), ResourceTypeDTO.class));
     }
 
     @Override
@@ -162,6 +161,6 @@ public class ResourceTypeService implements IResourceTypeService {
 
         resourceTypeRepository.delete(resourceType.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), "Borrado exitoso!");
+        return new ResponseDTO(null, "Borrado exitoso!");
     }
 }

@@ -40,7 +40,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import net.bytebuddy.utility.RandomString;
@@ -66,7 +65,7 @@ public class UserService implements IUserService {
                 OrganizationHelper.getOrganizationId(token));
 
         Page<User> users = findByCriteria(filter);
-        return new ResponseDTO(HttpStatus.OK.value(), users.map(user -> MapperHelper.modelMapper().map(user, UserDTO.class)));
+        return new ResponseDTO(users.map(user -> MapperHelper.modelMapper().map(user, UserDTO.class)));
     }
 
     private Page<User> findByCriteria(UserFilterDTO filter) {
@@ -141,7 +140,7 @@ public class UserService implements IUserService {
             throw new NoContentException("Usuario no encontrado - " + id);
         }
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user.get(), UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user.get(), UserDTO.class));
     }
 
     @Override
@@ -168,7 +167,7 @@ public class UserService implements IUserService {
 
         userRepository.save(user);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user, UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user, UserDTO.class));
     }
 
     @Override
@@ -196,7 +195,7 @@ public class UserService implements IUserService {
             userRepository.save(u);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(user.get(), UserDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(user.get(), UserDTO.class));
     }
 
     private Set<Profile> addPermissions(UserDTO userDTO) {
@@ -220,6 +219,6 @@ public class UserService implements IUserService {
 
         userRepository.delete(user.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), "Borrado exitoso!");
+        return new ResponseDTO(null, "Borrado exitoso!");
     }
 }

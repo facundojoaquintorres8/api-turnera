@@ -6,16 +6,14 @@ import lombok.Data;
 public class ResponseDTO {
     
     private String message;
-    private Integer status;
     private Object data;
 
-    public ResponseDTO(Integer status, String message) {
-        this.status = status;
+    public ResponseDTO(Object data, String message) {
         this.message = message;
+        this.data = data;
     }
 
-    public ResponseDTO(Integer status, Object data) {
-        this.status = status;
+    public ResponseDTO(Object data) {
         this.data = data;
     }
 

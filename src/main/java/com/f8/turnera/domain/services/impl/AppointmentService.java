@@ -42,7 +42,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -71,8 +70,7 @@ public class AppointmentService implements IAppointmentService {
         filter.setOrganizationId(OrganizationHelper.getOrganizationId(token));
 
         Page<Appointment> appointments = findByCriteria(filter);
-        return new ResponseDTO(HttpStatus.OK.value(),
-                appointments.map(appointment -> MapperHelper.modelMapper().map(appointment, AppointmentDTO.class)));
+        return new ResponseDTO(appointments.map(appointment -> MapperHelper.modelMapper().map(appointment, AppointmentDTO.class)));
     }
 
     private Page<Appointment> findByCriteria(AppointmentFilterDTO filter) {
@@ -152,7 +150,7 @@ public class AppointmentService implements IAppointmentService {
 
         emailService.sendBookedAppointmentEmail(appointment);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(appointment, SmallAppointmentDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(appointment, SmallAppointmentDTO.class));
     }
 
     @Override
@@ -166,7 +164,7 @@ public class AppointmentService implements IAppointmentService {
 
         appointmentRepository.save(appointment.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
     }
 
     @Override
@@ -182,7 +180,7 @@ public class AppointmentService implements IAppointmentService {
 
         appointmentRepository.save(appointment.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
     }
 
     @Override
@@ -196,7 +194,7 @@ public class AppointmentService implements IAppointmentService {
 
         appointmentRepository.save(appointment.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
     }
 
     @Override
@@ -212,6 +210,6 @@ public class AppointmentService implements IAppointmentService {
 
         appointmentRepository.save(appointment.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(appointment.get(), SmallAppointmentDTO.class));
     }
 }

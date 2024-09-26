@@ -40,7 +40,7 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
                 // return error info object with standard json
-                ResponseDTO response = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Campos inválidos.");
+                ResponseDTO response = new ResponseDTO(null, "Campos inválidos.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -56,7 +56,7 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
                 // return error info object with standard json
-                ResponseDTO response = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "Campos inválidos.");
+                ResponseDTO response = new ResponseDTO(null, "Campos inválidos.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -71,13 +71,13 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                "No se pudo realizar la operación. Intente más tarde.");
+                ResponseDTO response = new ResponseDTO(null, "No se pudo realizar la operación. Intente más tarde.");
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         @ExceptionHandler(IllegalArgumentException.class)
-        public ResponseEntity<ResponseDTO> illegalArgumentException(HttpServletRequest request, IllegalArgumentException e) {
+        public ResponseEntity<ResponseDTO> illegalArgumentException(HttpServletRequest request,
+                        IllegalArgumentException e) {
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
 
@@ -87,14 +87,15 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                "No se pudo realizar la operación. Intente más tarde.");
+                ResponseDTO response = new ResponseDTO(null, "No se pudo realizar la operación. Intente más tarde.");
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        // TODO: revisar porque esto también salta si quiero guardar algo no nulo, por ej la pwd en crear usuario
+        // TODO: revisar porque esto también salta si quiero guardar algo no nulo, por
+        // ej la pwd en crear usuario
         @ExceptionHandler(DataIntegrityViolationException.class)
-        public ResponseEntity<ResponseDTO> dataIntegrityViolationException(HttpServletRequest request, DataIntegrityViolationException e) {
+        public ResponseEntity<ResponseDTO> dataIntegrityViolationException(HttpServletRequest request,
+                        DataIntegrityViolationException e) {
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
 
@@ -104,7 +105,7 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.BAD_REQUEST.value(),
+                ResponseDTO response = new ResponseDTO(null,
                                 "No se puede eliminar una entidad con asociaciones. Elimine primero las asociaciones.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
@@ -120,8 +121,7 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                                "No se pudo realizar la operación. Intente más tarde.");
+                ResponseDTO response = new ResponseDTO(null, "No se pudo realizar la operación. Intente más tarde.");
                 return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -136,7 +136,7 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.FORBIDDEN.value(), "Acceso no permitido.");
+                ResponseDTO response = new ResponseDTO(null, "Acceso no permitido.");
                 return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
         }
 
@@ -150,13 +150,13 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.NO_CONTENT.value(),
-                                "No se pudo realizar la operación. Intente más tarde.");
+                ResponseDTO response = new ResponseDTO(null, "No se pudo realizar la operación. Intente más tarde.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        
+
         @ExceptionHandler(NoContentCustomException.class)
-        public ResponseEntity<ResponseDTO> noContentCustomException(HttpServletRequest request, NoContentCustomException e) {
+        public ResponseEntity<ResponseDTO> noContentCustomException(HttpServletRequest request,
+                        NoContentCustomException e) {
                 StringWriter errors = new StringWriter();
                 e.printStackTrace(new PrintWriter(errors));
 
@@ -165,7 +165,7 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+                ResponseDTO response = new ResponseDTO(null, e.getMessage());
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -179,7 +179,7 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+                ResponseDTO response = new ResponseDTO(null, e.getMessage());
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 
@@ -193,7 +193,8 @@ public class ErrorHandler {
 
                 log.error(errorMessage.toString());
 
-                ResponseDTO response = new ResponseDTO(HttpStatus.BAD_REQUEST.value(), "La zona horaria de su equipo no es válida. Por favor modifique esta.");
+                ResponseDTO response = new ResponseDTO(null,
+                                "La zona horaria de su equipo no es válida. Por favor modifique esta.");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
 

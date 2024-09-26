@@ -36,7 +36,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -56,8 +55,7 @@ public class ResourceService implements IResourceService {
         filter.setOrganizationId(OrganizationHelper.getOrganizationId(token));
 
         Page<Resource> resources = findByCriteria(filter);
-        return new ResponseDTO(HttpStatus.OK.value(),
-                resources.map(resource -> MapperHelper.modelMapper().map(resource, ResourceDTO.class)));
+        return new ResponseDTO(resources.map(resource -> MapperHelper.modelMapper().map(resource, ResourceDTO.class)));
     }
 
     private Page<Resource> findByCriteria(ResourceFilterDTO filter) {
@@ -127,7 +125,7 @@ public class ResourceService implements IResourceService {
             throw new NoContentException("Recurso no encontrado - " + id);
         }
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(resource.get(), ResourceDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(resource.get(), ResourceDTO.class));
     }
 
     @Override
@@ -142,7 +140,7 @@ public class ResourceService implements IResourceService {
 
         resourceRepository.save(resource);
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(resource, ResourceDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(resource, ResourceDTO.class));
     }
 
     @Override
@@ -161,7 +159,7 @@ public class ResourceService implements IResourceService {
             resourceRepository.save(r);
         });
 
-        return new ResponseDTO(HttpStatus.OK.value(), MapperHelper.modelMapper().map(resource.get(), ResourceDTO.class));
+        return new ResponseDTO(MapperHelper.modelMapper().map(resource.get(), ResourceDTO.class));
     }
 
     @Override
@@ -173,7 +171,7 @@ public class ResourceService implements IResourceService {
 
         resourceRepository.delete(resource.get());
 
-        return new ResponseDTO(HttpStatus.OK.value(), "Borrado exitoso!");
+        return new ResponseDTO(null, "Borrado exitoso!");
     }
 
     private Set<ResourceType> addResourcesTypes(ResourceDTO resource) {
